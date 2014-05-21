@@ -1,31 +1,113 @@
 require "zomekilayout/version"
 require "thor"
-require "yaml"
-
 require "rubygems"
 require "active_record"
+require "optparse"
 
 module Zomekilayout
-  class Design < Thor
-    desc "design_type", "sample"
-    #def self.register(design_type, src_dir, dest_dir)
-    def register(design_type)
-      src_dir ||= File.expand_path("../../templates", __FILE__)
-      app_root = "/var/share/zomeki"
-      dest_dir ||= "#{app_root}/sites/00/00/00/01/00000001/public/_themes"
+
+  class Config < Thor
+  
+    desc "", ""
+    def set( args = {} )
+      begin
       
-      # establish database connection
-      config = YAML.load_file("#{app_root}/config/database.yml")
-      ActiveRecord::Base.establish_connection(config["production"])
-      
-      design_type ||= 'bootstrap'
-      if design_type == 'bootstrap'
-        bootstrap = Zomekilayout::Bootstrap.new
-        bootstrap.copy(src_dir, dest_dir)
-        bootstrap.setup
+        raise "Option is missing." if args[:p].blank? || args[:n].blank?
+
+        raise "Directory is not exist." unless Dir.exist?(args[:p])
+        
+        @source_path = args[:p]
+        @layout_name = args[:n]
+        @app_root = Dir.getwd #=> "/var/share/zomeki"
+        @dest_path = "#{@app_root}/sites/00/00/00/01/00000001/public/_themes/#{@layout_name}"
+        
+        establish_database
+        
+        copy
+        
+        setup
+
+      rescue => e
+        p_error(e.message)
       end
     end
+    
+    desc "", ""
+    def opts(args)
+      opt = OptionParser.new
+      opt.on('-p') {|v| args[:p] = v }
+      opt.on('-n') {|v| args[:n] = v }
+      opt.parse(args)
+    end
+    
+    private
+    def copy
+      
+      FileUtils.mkdir_p(@dest_path) and p_info("mkdir #{@dest_path}") unless Dir.exist?(@dest_path)
+      
+      FileUtils.copy_entry(@source_path, @dest_path, {:verbose => true})
 
+    end
+    
+    def setup
+      raise "[index.html] is not exist." unless File.exist?("#{@dest_path}/index.html")
+      
+      contents = Pathname("#{@dest_path}/index.html").read(:encoding => Encoding::UTF_8)
+      head = contents.slice((contents.index("<head>") + 6)..(contents.index("</head>") - 1))
+      body = contents.slice((contents.index("<body>") + 6)..(contents.index("</body>") - 1))
+      
+      create_layout(head, body)
+      
+      update_node
+      
+      true
+    end
+    
+    def create_layout(head, body)
+      @layout = Layout.new
+      @layout.concept_id = 1
+      @layout.site_id = 1
+      @layout.state = "public"
+      @layout.name = @layout_name
+      @layout.title = @layout_name
+      @layout.head = head
+      @layout.body = body
+#      @layout.in_creator = {'group_id' => 2, 'user_id' => 1}
+      @layout.save!
+      puts @layout.inspect
+    end
+    
+    def update_node
+      @node = Node.find(2)
+      @node.layout_id = @layout.id
+      @node.save!
+      puts @node.inspect
+    end
+    
+    def p_usage
+      puts <<-EOL
+Usage: zomekilayout set [options]
+  -p
+  -n
+      EOL
+      false
+    end
+    
+    def p_error(msg)
+      puts "ERROR: #{msg}"
+      false and return
+    end
+    
+    def p_info(msg)
+      puts "INFO: #{msg}"
+    end
+    
+    def establish_database
+      require "yaml"
+      config = YAML.load_file("#{@app_root}/config/database.yml")
+      ActiveRecord::Base.establish_connection(config["production"])
+    end
+    
   end
   
   class Layout < ActiveRecord::Base
@@ -34,46 +116,5 @@ module Zomekilayout
   
   class Node < ActiveRecord::Base
     self.table_name = 'cms_nodes'
-  end
-  
-  class Bootstrap
-  
-    def copy(src_dir, dest_dir)      
-      Dir.mkdir(dest_dir) unless Dir.exist?(dest_dir)
-
-      filenames = Dir.glob("#{src_dir}/bootstrap-3.1.1-dist/*")
-      filenames.each do |filename|
-        if File.directory?(filename)
-          dirname = filename.split("/").last 
-          Dir.mkdir("#{dest_dir}/#{dirname}") unless Dir.exist?("#{dest_dir}/#{dirname}")
-        end
-        FileUtils.copy_entry(filename, "#{dest_dir}/#{dirname}", {:verbose => true})
-      end
-      puts "---> Successfully copied files under #{dest_dir}."
-    end
-    
-    def setup
-      pathname = Pathname.new(File.expand_path("../zomekilayout/bootstrap", __FILE__))
-      head = Pathname("#{pathname}/head.html.erb").read(:encoding => Encoding::UTF_8)
-      body = Pathname("#{pathname}/body.html.erb").read(:encoding => Encoding::UTF_8)
-
-      @layout = Layout.new
-      @layout.concept_id = 1
-      @layout.site_id = 1
-      @layout.state = "public"
-      @layout.name = "default"
-      @layout.title = "default"
-      @layout.head = "#{head}"
-      @layout.body = "#{body}"    
-#      @layout.in_creator = {'group_id' => 2, 'user_id' => 1}
-      @layout.save!
-      puts "---> Successfully create to cms_layouts"
-      
-      @node = Node.find(2)
-      @node.layout_id = @layout.id
-      @node.save!
-      puts "---> Successfully update to cms_nodes"
-    end
-  end
-  
+  end  
 end

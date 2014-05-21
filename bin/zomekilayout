@@ -2,5 +2,13 @@
 
 require 'zomekilayout'
 
-Zomekilayout::Design.start(ARGV)
+opt = OptionParser.new
+
+args = {}
+
+opt.on('-p') {|v| args[:p] = v }
+opt.on('-n') {|v| args[:n] = v }
+opt.parse(args)
+      
+Zomekilayout::Config.start(args)
 
