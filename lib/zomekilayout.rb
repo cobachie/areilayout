@@ -9,16 +9,16 @@ module Zomekilayout
   class Config < Thor
   
     desc "", ""
-    def set( args = {} )
+    def set(source_path, layout_name)
       begin
-      
-        raise "Option is missing." if args[:p].blank? || args[:n].blank?
 
-        raise "Directory is not exist." unless Dir.exist?(args[:p])
+        raise "Option is missing." if source_path.blank? || layout_name.blank?
+
+        raise "Directory is not exist." unless Dir.exist?(source_path)
         
-        @source_path = args[:p]
-        @layout_name = args[:n]
-        @app_root = Dir.getwd #=> "/var/share/zomeki"
+        @source_path = source_path
+        @layout_name = layout_name
+        @app_root = Dir.getwd #=> should be RAILS_ROOT
         @dest_path = "#{@app_root}/sites/00/00/00/01/00000001/public/_themes/#{@layout_name}"
         
         establish_database
@@ -32,29 +32,32 @@ module Zomekilayout
       end
     end
     
-    desc "", ""
-    def opts(args)
-      opt = OptionParser.new
-      opt.on('-p') {|v| args[:p] = v }
-      opt.on('-n') {|v| args[:n] = v }
-      opt.parse(args)
-    end
-    
     private
     def copy
-      
+
       FileUtils.mkdir_p(@dest_path) and p_info("mkdir #{@dest_path}") unless Dir.exist?(@dest_path)
-      
       FileUtils.copy_entry(@source_path, @dest_path, {:verbose => true})
 
     end
     
     def setup
       raise "[index.html] is not exist." unless File.exist?("#{@dest_path}/index.html")
-      
+
       contents = Pathname("#{@dest_path}/index.html").read(:encoding => Encoding::UTF_8)
-      head = contents.slice((contents.index("<head>") + 6)..(contents.index("</head>") - 1))
-      body = contents.slice((contents.index("<body>") + 6)..(contents.index("</body>") - 1))
+      /<head>((\n|.)*)<\/head>/ =~ contents
+      head = $1
+      /<body.*>((\n|.)*)<\/body>/ =~ contents
+      body = $1
+
+      dir_list = []
+      Dir.glob("#{@dest_path}/*").each do |filename|
+        dir_list << filename.split("/").last if File.directory?(filename)
+      end
+      
+      dir_list.each do |dirname|
+        head.gsub!("=\"#{dirname}/", "=\"_themes/#{@layout_name}/#{dirname}/")
+        body.gsub!("=\"#{dirname}/", "=\"_themes/#{@layout_name}/#{dirname}/")
+      end
       
       create_layout(head, body)
       
@@ -74,14 +77,12 @@ module Zomekilayout
       @layout.body = body
 #      @layout.in_creator = {'group_id' => 2, 'user_id' => 1}
       @layout.save!
-      puts @layout.inspect
     end
     
     def update_node
       @node = Node.find(2)
       @node.layout_id = @layout.id
       @node.save!
-      puts @node.inspect
     end
     
     def p_usage

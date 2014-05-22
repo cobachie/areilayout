@@ -1,14 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'zomekilayout'
+require "zomekilayout"
 
-opt = OptionParser.new
-
-args = {}
-
-opt.on('-p') {|v| args[:p] = v }
-opt.on('-n') {|v| args[:n] = v }
-opt.parse(args)
-      
-Zomekilayout::Config.start(args)
+Zomekilayout::Config.start(ARGV)
 
