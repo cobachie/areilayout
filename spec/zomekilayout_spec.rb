@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Zomekilayout do
 
   before do
-    @src_path     = "/var/share/html/eden"
-    @layout_name  = "eden"
+    @src_path     = "/var/share/html/bootstrap-3.1.1-dist"
+    @layout_name  = "bootstrap"
     @dest_dir = "/var/share/zomeki/sites/00/00/00/01/00000001/public/_themes"
     Dir.chdir("/var/share/zomeki")
   end
