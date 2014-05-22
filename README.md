@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage
 
-#### 1.cd directory
+#### 1.Change directory
 
     $ cd RAILS_ROOT
     
