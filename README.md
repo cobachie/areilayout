@@ -1,6 +1,6 @@
 # Zomekilayout
 
-TODO: Write a gem description
+[ZOMEKI](http://zomeki.jp/)の標準レイアウトを設定します.
 
 ## Installation
 
@@ -18,7 +18,13 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+#### 1.cd directory
+
+    $ cd RAILS_ROOT
+    
+#### 1.Type code below
+
+    $ zomekilayout set SOURCE_PATH LAYOUT_NAME
 
 ## Contributing
 
