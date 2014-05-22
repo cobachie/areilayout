@@ -22,7 +22,7 @@ Or install it yourself as:
 
     $ cd RAILS_ROOT
     
-#### 1.Type code below
+#### 2.Type code below
 
     $ zomekilayout set SOURCE_PATH LAYOUT_NAME
 
