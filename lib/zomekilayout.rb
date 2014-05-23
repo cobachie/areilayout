@@ -7,24 +7,24 @@ require "optparse"
 module Zomekilayout
 
   class Config < Thor
+    default_command :set
   
     desc "", ""
     def set(source_path, layout_name)
       begin
-
         raise "Option is missing." if source_path.blank? || layout_name.blank?
-
-        raise "Directory is not exist." unless Dir.exist?(source_path)
         
+        raise "Directory is not exist." unless Dir.exist?(source_path)
+
         @source_path = source_path
         @layout_name = layout_name
         @app_root = Dir.getwd #=> should be RAILS_ROOT
         @dest_path = "#{@app_root}/sites/00/00/00/01/00000001/public/_themes/#{@layout_name}"
         
         establish_database
-        
+
         copy
-        
+
         setup
 
       rescue => e
@@ -36,11 +36,13 @@ module Zomekilayout
     def copy
 
       FileUtils.mkdir_p(@dest_path) and p_info("mkdir #{@dest_path}") unless Dir.exist?(@dest_path)
+      
       FileUtils.copy_entry(@source_path, @dest_path, {:verbose => true})
 
     end
     
     def setup
+    
       raise "[index.html] is not exist." unless File.exist?("#{@dest_path}/index.html")
 
       contents = Pathname("#{@dest_path}/index.html").read(:encoding => Encoding::UTF_8)

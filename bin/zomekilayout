@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
 
 require "zomekilayout"
+require "optparse"
 
-Zomekilayout::Config.start(ARGV)
+params = {}
+OptionParser.new { |opt|
+  opt.on('-p path') {|v| params[:path] = v }
+  opt.on('-n name') {|v| params[:name] = v }
+}.parse!(ARGV)
 
+Zomekilayout::Config.start([:set, params[:path], params[:name]])
