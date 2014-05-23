@@ -1,12 +1,12 @@
-# Zomekilayout
+# Areilayout
 
-[ZOMEKI](http://zomeki.jp/)の標準レイアウトを設定します.
+[ZOMEKI](http://arei.jp/)の標準レイアウトを設定します.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'zomekilayout'
+    gem 'areilayout'
 
 And then execute:
 
@@ -14,7 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install zomekilayout
+    $ gem install areilayout
 
 ## Usage
 
@@ -24,11 +24,11 @@ Or install it yourself as:
     
 #### 2.Type code below
 
-    $ zomekilayout set -n LAYOUT_NAME -p SOURCE_PATH
+    $ areilayout set -n LAYOUT_NAME -p SOURCE_PATH
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/zomekilayout/fork )
+1. Fork it ( https://github.com/[my-github-username]/areilayout/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require "areilayout"
+require "optparse"
+
+params = {}
+OptionParser.new { |opt|
+  opt.on('-p path') {|v| params[:path] = v }
+  opt.on('-n name') {|v| params[:name] = v }
+}.parse!(ARGV)
+
+Areilayout::Config.start([:set, params[:path], params[:name]])
