@@ -24,7 +24,7 @@ Or install it yourself as:
     
 #### 2.Type code below
 
-    $ zomekilayout set SOURCE_PATH LAYOUT_NAME
+    $ zomekilayout set -n LAYOUT_NAME -p SOURCE_PATH
 
 ## Contributing
 
