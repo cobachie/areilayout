@@ -57,13 +57,13 @@ module Areilayout
       end
       
       dir_list.each do |dirname|
-        head.gsub!("=\"#{dirname}/", "=\"_themes/#{@layout_name}/#{dirname}/")
-        body.gsub!("=\"#{dirname}/", "=\"_themes/#{@layout_name}/#{dirname}/")
+        head.gsub!("=\"#{dirname}/", "=\"/_themes/#{@layout_name}/#{dirname}/")
+        body.gsub!("=\"#{dirname}/", "=\"/_themes/#{@layout_name}/#{dirname}/")
       end
       
       create_layout(head, body)
       
-      update_node
+      #update_node
       
       true
     end
