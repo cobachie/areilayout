@@ -24,7 +24,14 @@ Or install it yourself as:
     
 #### 2.Type code below
 
-    $ areilayout set -n LAYOUT_NAME -p SOURCE_PATH
+- localにあるテンプレートファイルをコピーする場合  
+
+    `$ zomekilayout set -n LAYOUT_NAME -p SOURCE_PATH`
+
+- 指定したURLからテンプレートファイル(*.zip)をダウンロードする場合  
+
+    `$ zomekilayout get -n LAYOUT_NAME -p SOURCE_URI`
+
 
 ## Contributing
 
