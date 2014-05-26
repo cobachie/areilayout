@@ -38,7 +38,7 @@ module Areilayout
           
         establish_database
         
-        dl && copy && setup
+        dl && copy && setup && rmdir
         true
 
       rescue => e
@@ -66,7 +66,6 @@ private
           end
         end
       end
-      
       Zip::File.open(filename) do |zip|
         zip.each do |entry|
           #puts "entry #{entry.to_s}"
@@ -77,10 +76,15 @@ private
       
       Dir.chdir "#{Dir.tmpdir}/#{@layout_name}"
       index_file = Dir.glob("**/index.html")
+      raise "index.html is not exist." if index_file.blank?
       @source_path = File.dirname(File.expand_path(index_file[0]))
     end
     
-    def copy
+    def rmdir
+      FileUtils.remove_entry("#{Dir.tmpdir}/#{@layout_name}")
+    end
+    
+    def copy    
       raise "index.html is not exist." unless File.exist?("#{@source_path}/index.html")
       FileUtils.mkdir_p(@dest_path) and p_info("mkdir #{@dest_path}") unless Dir.exist?(@dest_path)
       FileUtils.copy_entry(@source_path, @dest_path, {:verbose => true})
