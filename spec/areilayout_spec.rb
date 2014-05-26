@@ -3,10 +3,10 @@ require 'spec_helper'
 describe Areilayout do
 
   before do
-    @src_path     = "/var/share/html/bootstrap-3.1.1-dist"
-    @layout_name  = "bootstrap"
-    @dest_dir = "/var/share/arei/sites/00/00/00/01/00000001/public/_themes"
-    Dir.chdir("/var/share/arei")
+    @src_path     = "/var/share/html/vintage/vintage_files/html"
+    @layout_name  = "vintage"
+    @dest_dir = "/var/share/zomeki/sites/00/00/00/01/00000001/public/_themes"
+    Dir.chdir("/var/share/zomeki")
   end
   
   it 'has a version number' do
@@ -32,7 +32,7 @@ describe Areilayout do
   end
   
   it 'has error if current directory is not RAILS_ROOT' do
-    Dir.chdir("/var/share/arei/tmp")
+    Dir.chdir("/var/share/zomeki/tmp")
     #@ret = Areilayout::Config.new.set({p: "#{@src_path}", n: "#{@layout_name}"})
     @ret = Areilayout::Config.new.set(@src_path, @layout_name)
     expect(@ret).to eq false
@@ -51,5 +51,5 @@ describe Areilayout do
     @ret = Areilayout::Config.new.set(@src_path, @layout_name)
     expect(@ret).to eq true
   end
-
+  
 end

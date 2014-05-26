@@ -9,4 +9,4 @@ OptionParser.new { |opt|
   opt.on('-n name') {|v| params[:name] = v }
 }.parse!(ARGV)
 
-Areilayout::Config.start([:set, params[:path], params[:name]])
+Areilayout::Config.start([ARGV[0], params[:path], params[:name]])

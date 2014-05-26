@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["chie.kobayashi@avasys.jp"]
   spec.summary       = %q{Write a short summary. Required.}
   spec.description   = %q{Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/cobachie/areilayout"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'thor', '~> 0.18', '>= 0.18.1'
   spec.add_runtime_dependency 'activerecord'
   spec.add_runtime_dependency 'mysql2'
+  spec.add_runtime_dependency 'rubyzip'
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
