@@ -1,6 +1,6 @@
 # Areilayout
 
-[ZOMEKI](http://arei.jp/)の標準レイアウトを設定します.
+AreiCMSの標準レイアウトを設定します.
 
 ## Installation
 
