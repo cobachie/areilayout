@@ -113,7 +113,9 @@ private
       %w(header footer).each do |tag|
         data = {}
         data["body"] = Utils.tagclip(contents, tag)[0]
-        Utils.p_info("Successfully registered piece [#{tag}]") if CmsPiece.new.save_piece(data, "#{@layout_name}-#{tag}")
+        unless data["body"].blank?
+          Utils.p_info("Successfully registered piece [#{@layout_name}-#{tag}]") if CmsPiece.new.save_piece(data, "#{@layout_name}-#{tag}")
+        end
       end
     end
 
