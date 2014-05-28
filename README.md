@@ -26,16 +26,16 @@ Or install it yourself as:
 
 - localにあるテンプレートファイルをコピーする場合  
 
-    `$ zomekilayout set -n LAYOUT_NAME -p SOURCE_PATH`
+    `$ areilayout set -n LAYOUT_NAME -p SOURCE_PATH`
 
 - 指定したURLからテンプレートファイル(*.zip)をダウンロードする場合  
 
-    `$ zomekilayout get -n LAYOUT_NAME -p SOURCE_URI`
+    `$ areilayout get -n LAYOUT_NAME -p SOURCE_URI`
 
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/areilayout/fork )
+1. Fork it ( https://github.com/cobachie/areilayout/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
