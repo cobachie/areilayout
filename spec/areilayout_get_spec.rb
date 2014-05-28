@@ -17,7 +17,15 @@ describe Areilayout do
     expect(@ret).to eq false
   end
   
+  it 'has error if lauout is already exist' do
+    @ret = Areilayout::Config.new.get(@src_path, @layout_name)
+    @ret = Areilayout::Config.new.get(@src_path, @layout_name)    
+    expect(@ret).to eq false    
+  end
+  
   it 'is successfully get template & setup layout' do
+    Areilayout::CmsLayout.where(title: @layout_name).destroy_all
+    
     @ret = Areilayout::Config.new.get(@src_path, @layout_name)
     expect(@ret).to eq true
     

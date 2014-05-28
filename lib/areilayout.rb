@@ -1,9 +1,12 @@
 require "areilayout/version"
+require "areilayout/utils"
+
 require "thor"
 require "rubygems"
 require "active_record"
 require "optparse"
 require "open-uri"
+require "yaml"
 
 module Areilayout
 
@@ -25,7 +28,7 @@ module Areilayout
         true
         
       rescue => e
-        p_error(e.message)
+        Utils.p_error(e.message)
       end
     end
 
@@ -38,11 +41,11 @@ module Areilayout
           
         establish_database
         
-        dl && copy && setup && rmdir
+        dl && copy && setup && Utils.rmdir(@layout_name)
         true
 
       rescue => e
-        p_error(e.message)
+        Utils.p_error(e.message)
       end
     end
     
@@ -68,8 +71,6 @@ private
       end
       Zip::File.open(filename) do |zip|
         zip.each do |entry|
-          #puts "entry #{entry.to_s}"
-          #zip.extract(entry, "#{dest_path}/#{entry.to_s}") { true }
           zip.extract(entry, "#{Dir.tmpdir}/#{@layout_name}/#{entry.to_s}") { true }
         end
       end
@@ -80,22 +81,17 @@ private
       @source_path = File.dirname(File.expand_path(index_file[0]))
     end
     
-    def rmdir
-      FileUtils.remove_entry("#{Dir.tmpdir}/#{@layout_name}")
-    end
-    
     def copy    
       raise "index.html is not exist." unless File.exist?("#{@source_path}/index.html")
-      FileUtils.mkdir_p(@dest_path) and p_info("mkdir #{@dest_path}") unless Dir.exist?(@dest_path)
+      FileUtils.mkdir_p(@dest_path) and Utils.p_info("mkdir #{@dest_path}") unless Dir.exist?(@dest_path)
       FileUtils.copy_entry(@source_path, @dest_path, {:verbose => true})
     end
     
     def setup
       contents = Pathname("#{@dest_path}/index.html").read(:encoding => Encoding::UTF_8)
-      /<head>((\n|.)*)<\/head>/ =~ contents
-      head = $1
-      /<body.*>((\n|.)*)<\/body>/ =~ contents
-      body = $1
+      
+      head = Utils.tagclip(contents, "head")[1]
+      body = Utils.tagclip(contents, "body")[1]
 
       dir_list = []
       Dir.glob("#{@dest_path}/*").each do |filename|
@@ -106,38 +102,29 @@ private
         head.gsub!("=\"#{dirname}/", "=\"/_themes/#{@layout_name}/#{dirname}/")
         body.gsub!("=\"#{dirname}/", "=\"/_themes/#{@layout_name}/#{dirname}/")
       end
-      create_layout(head, body)
+            
+      raise "#{@layout_name} is already exist." unless CmsLayout.where(title: @layout_name).blank?
+      CmsLayout.new.save_layout(@layout_name, head, body)
+      
+      set_piece(contents)
     end
     
-    def create_layout(head, body)
-      @layout = Layout.new
-      @layout.concept_id = 1
-      @layout.site_id = 1
-      @layout.state = "public"
-      @layout.name = @layout_name
-      @layout.title = @layout_name
-      @layout.head = head
-      @layout.body = body
-#      @layout.in_creator = {'group_id' => 2, 'user_id' => 1}
-      @layout.save!
+    def set_piece(contents)
+      %w(header footer).each do |tag|
+        data = {}
+        data["body"] = Utils.tagclip(contents, tag)[0]
+        Utils.p_info("Successfully registered piece [#{tag}]") if CmsPiece.new.save_piece(data, "#{@layout_name}-#{tag}")
+      end
     end
-    
+
     def establish_database
-      require "yaml"
       config = YAML.load_file("#{@app_root}/config/database.yml")
       ActiveRecord::Base.establish_connection(config["production"])
     end
     
-    def p_error(msg)
-      puts "ERROR: #{msg}"
-      false and return
-    end
-    
-    def p_info(msg)
-      puts "INFO: #{msg}"
-    end
-    
   end
 
-  require 'areilayout/layout'
+  require "areilayout/cms_layout"
+  require "areilayout/cms_piece"
+
 end
